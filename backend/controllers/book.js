@@ -79,6 +79,7 @@ exports.getOneBook = (req, res, next) => {
 };
 
 exports.getAllBooks = (req, res, next) => {
+  console.log("toto");
   Book.find()
     .then((books) => res.status(200).json(books))
     .catch((error) => res.status(400).json({ error }));

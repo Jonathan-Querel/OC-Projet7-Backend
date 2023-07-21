@@ -1,7 +1,8 @@
 const express = require("express"); /*importation express*/
 const mongoose = require("mongoose");
-
-const stuffRoutes = require("./routes/book");
+const bodyParser = require("body-parser");
+const path = require("path");
+const bookRoutes = require("./routes/book");
 const userRoutes = require("./routes/user");
 
 mongoose
@@ -15,9 +16,8 @@ mongoose
 const app =
   express(); /*appel de la méthode express pour créer une appli express*/
 
-app.use("express.json"); /*Intercepte tous les requête contenant du json */
-
-/*Middleware pour éviter les erreurs Cors*/ app.use((req, res, next) => {
+/*Middleware pour éviter les erreurs Cors*/
+app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader(
     "Access-Control-Allow-Headers",
@@ -30,11 +30,9 @@ app.use("express.json"); /*Intercepte tous les requête contenant du json */
   next();
 });
 
-app.use(
-  bodyParser.json()
-); /* A t'on besoin de ça car il me semble que c'est pour les anciens ?*/
+app.use(bodyParser.json());
 
-app.use("/api/book", stuffRoutes);
+app.use("/api/book", bookRoutes);
 app.use("/api/auth", userRoutes);
 app.use("/images", express.static(path.join(__dirname, "images")));
 
