@@ -1,8 +1,10 @@
+require("dotenv").config();
+const cors = require("cors");
 const express = require("express"); /*importation express*/
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const path = require("path");
-const bookRoutes = require("./routes/book");
+const bookRoutes = require("./routes/books");
 const userRoutes = require("./routes/user");
 
 mongoose
@@ -13,28 +15,34 @@ mongoose
   .then(() => console.log("Connexion à MongoDB réussie !"))
   .catch(() => console.log("Connexion à MongoDB échouée !"));
 
-const app =
-  express(); /*appel de la méthode express pour créer une appli express*/
+const app = express();
+// Permet de créer une application express
 
-/*Middleware pour éviter les erreurs Cors*/
+// Middleware générale exécuté dans notre code pour rajouter des header et
+// donner les autorisations pour les requêtes en toutes sécurité
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
+  // Permet d'accéder à notre API depuis n'importe quelle origine ('*')
   res.setHeader(
     "Access-Control-Allow-Headers",
     "Origin, X-Requested-With, Content, Accept, Content-Type, Authorization"
+    // Permet d'ajouter les headers mentionnés aux requêtes envoyées vers notre API
   );
   res.setHeader(
     "Access-Control-Allow-Methods",
     "GET, POST, PUT, DELETE, PATCH, OPTIONS"
+    // Permet d'envoyer des requêtes avec les méthodes menthionnées
   );
   next();
 });
 
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-app.use("/api/book", bookRoutes);
+app.use(cors());
+app.use("/api/books", bookRoutes);
 app.use("/api/auth", userRoutes);
 app.use("/images", express.static(path.join(__dirname, "images")));
 
-module.exports =
-  app; /*export de la constante pour pouvoir accéder depuis les autres fichiers  */
+module.exports = app;
+// export de la constante pour pouvoir accéder depuis les autres fichiers

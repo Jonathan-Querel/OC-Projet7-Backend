@@ -1,8 +1,10 @@
 const http = require("http");
+// importe le paquet http qui permet les requêtes
 const app = require("./app");
+//importe notre application faite avec express qui vient du fichier app.js, puis on va la mettre en paramètre create server vu que l'app est faite.
 
-/*renvoie un port valide, qu'il soit founi sous la forme d'un numéro
-ou d'une chaîne*/ const normalizePort = (val) => {
+// FONCTION NORMALIZE PORT : renvoie un port valide, qu'il soit founi sous la forme d'un numéro ou d'une chaîne
+const normalizePort = (val) => {
   const port = parseInt(val, 10);
 
   if (isNaN(port)) {
@@ -16,8 +18,8 @@ ou d'une chaîne*/ const normalizePort = (val) => {
 const port = normalizePort(process.env.PORT || "4000");
 app.set("port", port);
 
-/* recherche les différentes erreurs et les gère de manière appropriée. Elle est ensuite
-enregistrée dans le serveur*/ const errorHandler = (error) => {
+//FONCTION ERRORHANDLER : recherche les différentes erreurs et les gère de manière appropriée. Elle est ensuite enregistrée dans le serveur
+const errorHandler = (error) => {
   if (error.syscall !== "listen") {
     throw error;
   }
@@ -41,8 +43,8 @@ enregistrée dans le serveur*/ const errorHandler = (error) => {
 const server = http.createServer(app);
 
 server.on("error", errorHandler);
-/* Ecouter d'évènements consignant le port ou le canal nommé sur lequel le serveur s'exécute
-dans la console*/ server.on("listening", () => {
+// Ecouter d'évènements consignant le port ou le canal nommé sur lequel le serveur s'exécute dans la console
+server.on("listening", () => {
   const address = server.address();
   const bind = typeof address === "string" ? "pipe " + address : "port " + port;
   console.log("Listening on " + bind);
