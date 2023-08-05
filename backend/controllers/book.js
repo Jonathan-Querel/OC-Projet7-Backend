@@ -1,8 +1,5 @@
-//const sharp rajouté
-
 const Book = require("../models/Book");
 const fs = require("fs");
-const sharp = require("sharp");
 
 exports.createBook = (req, res, next) => {
   const bookObject = JSON.parse(req.body.book);
@@ -126,18 +123,20 @@ exports.addRating = async (req, res, next) => {
   const ratingObject = req.body;
   ratingObject.grade = ratingObject.rating;
   delete ratingObject.rating;
-  // const { userId, rating } = req.body;
+  const { userId, grade } = req.body;
 
   try {
-    // if (book.rating.find((r) => r.userId === userId)) {
-    //   return res.status(400).json({ message: 'Vous avez déjà noté ce livre.' });
+    // if (Book.rating.find((r) => r.userId === userId)) {
+    //   return res.status(400).json({ message: "Vous avez déjà noté ce livre." });
     // }
+
     const updatedBook = await Book.findOneAndUpdate(
       { _id: req.params.id },
       { $push: { ratings: ratingObject }, $inc: { totalRatings: 1 } },
-      // mise à jour pour ajouter la note (ratingObject) au tableau ratings du lire avec l'id indiqué par prams.id
-      //  + mise a jour avec opérateur inc pour augmenter titaRatings du livre de 1 (nombre total d'évaluation du livre)
+      // mise à jour pour ajouter la note (ratingObject) au tableau ratings du livre avec l'id indiqué par params.id
+      //  + mise a jour avec opérateur inc pour augmenter totalRatings du livre de 1 (nombre total d'évaluation du livre)
       { new: true }
+      // autorise la création
     );
 
     // calcul de la note moyenne du livre en itérant sur le tableau ratings
@@ -155,8 +154,10 @@ exports.addRating = async (req, res, next) => {
     );
 
     res.status(201).json({
-      book: bookWithAverageRating,
-      _id: req.params.id,
+      userId,
+      rating: grade,
+      //book: bookWithAverageRating,
+      //_id: req.params.id,
     });
   } catch (error) {
     res.status(401).json({ error: error.message });
