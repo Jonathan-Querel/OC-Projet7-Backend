@@ -123,42 +123,38 @@ exports.addRating = async (req, res, next) => {
   const ratingObject = req.body;
   ratingObject.grade = ratingObject.rating;
   delete ratingObject.rating;
-  const { userId, grade } = req.body;
 
   try {
-    // if (Book.rating.find((r) => r.userId === userId)) {
-    //   return res.status(400).json({ message: "Vous avez déjà noté ce livre." });
-    // }
+    const book = await Book.findOne({ _id: req.params.id }); // on récupere le livre
 
-    const updatedBook = await Book.findOneAndUpdate(
-      { _id: req.params.id },
-      { $push: { ratings: ratingObject }, $inc: { totalRatings: 1 } },
-      // mise à jour pour ajouter la note (ratingObject) au tableau ratings du livre avec l'id indiqué par params.id
-      //  + mise a jour avec opérateur inc pour augmenter totalRatings du livre de 1 (nombre total d'évaluation du livre)
-      { new: true }
-      // autorise la création
-    );
+    if (book.ratings.find((r) => r.userId === req.auth.userId)) {
+      // on compare si l'utilisateur a déjà noté le livre
+      res.status(400).json({ message: "Vous avez déjà noté ce livre." }); // si oui, on renvoie une erreur
+    } else {
+      // si non, on ajoute la note
+      const updatedBook = await Book.findOneAndUpdate(
+        { _id: req.params.id },
+        {
+          $push: { ratings: ratingObject }, //  met ratings dans le tableau
+          $inc: { totalRatings: 1 }, // ça rajoute un champs
+        },
+        { new: true } //autorise la création si le champ n'existe pas dans la base (update transforme en POST)
+      );
 
-    // calcul de la note moyenne du livre en itérant sur le tableau ratings
-    let averageRates = 0;
-    for (let i = 0; i < updatedBook.ratings.length; i++) {
-      averageRates += updatedBook.ratings[i].grade;
+      let averageRates = 0;
+      for (let i = 0; i < updatedBook.ratings.length; i++) {
+        averageRates += updatedBook.ratings[i].grade;
+      }
+      averageRates /= updatedBook.ratings.length;
+
+      const bookWithAverageRating = await Book.findOneAndUpdate(
+        { _id: req.params.id },
+        { averageRating: averageRates },
+        { new: true }
+      );
+
+      res.status(201).json(bookWithAverageRating);
     }
-    averageRates /= updatedBook.ratings.length;
-
-    const bookWithAverageRating = await Book.findOneAndUpdate(
-      { _id: req.params.id },
-      { averageRating: averageRates },
-      // mise à jour note moyenne (averageRating) du livre avec la nouvelle note moyenne calculée
-      { new: true }
-    );
-
-    res.status(201).json({
-      userId,
-      rating: grade,
-      //book: bookWithAverageRating,
-      //_id: req.params.id,
-    });
   } catch (error) {
     res.status(401).json({ error: error.message });
   }

@@ -5,7 +5,7 @@ const User = require("../models/User");
 
 exports.signup = (req, res, next) => {
   bcrypt
-  // Fonction asynchrone qui renvoie une Promise dans laquelle nous recevons le hash généré.
+    // Fonction asynchrone qui renvoie une Promise dans laquelle nous recevons le hash généré.
     .hash(req.body.password, 10)
     // Fonction pour crypter un mdp
     // 10 c'est le nombre de fois où on fait tourner l'algorithme pour faire crypter le mdp

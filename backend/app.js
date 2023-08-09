@@ -13,7 +13,7 @@ mongoose
       process.env.DB_USER +
       ":" +
       process.env.DB_PASSWORD +
-      "@oc-grimoire.lg97zc2.mongodb.net/?retryWrites=true&w=majority",
+      "@oc-grimoire.lg97zc2.mongodb.net/Projet7?retryWrites=true&w=majority",
     { useNewUrlParser: true, useUnifiedTopology: true }
   )
   .then(() => console.log("Connexion à MongoDB réussie !"))
