@@ -55,12 +55,19 @@ exports.modifyBook = (req, res, next) => {
         res.status(401).json({ message: "Non autorisé" });
       } else {
         // utilisateur autorisé à modifié avec la méthode updateOne pour mettre à jour le livre dans la base de données.
-        Book.updateOne(
-          { _id: req.params.id },
-          { ...bookObject, _id: req.params.id }
-        )
-          .then(() => res.status(200).json({ message: "Livre modifié !" }))
-          .catch((error) => res.status(401).json({ error }));
+
+        // http://localhost:4000/images/Zero_to_One.png1691689438783.webp
+        // filename = ['http://localhost:4000', 'Zero_to_One.png1691689438783.webp']
+
+        const filename = book.imageUrl.split("/images/")[1];
+        fs.unlink(`images/${filename}`, () => {
+          Book.updateOne(
+            { _id: req.params.id },
+            { ...bookObject, _id: req.params.id }
+          )
+            .then(() => res.status(200).json({ message: "Livre modifié !" }))
+            .catch((error) => res.status(401).json({ error }));
+        });
       }
     })
     .catch((error) => {
