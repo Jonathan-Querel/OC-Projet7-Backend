@@ -54,11 +54,6 @@ exports.modifyBook = (req, res, next) => {
         // vérifie bon utilisateur (compare userId du token et celui de notre base)
         res.status(401).json({ message: "Non autorisé" });
       } else {
-        // utilisateur autorisé à modifié avec la méthode updateOne pour mettre à jour le livre dans la base de données.
-
-        // http://localhost:4000/images/Zero_to_One.png1691689438783.webp
-        // filename = ['http://localhost:4000', 'Zero_to_One.png1691689438783.webp']
-
         const filename = book.imageUrl.split("/images/")[1];
         fs.unlink(`images/${filename}`, () => {
           Book.updateOne(
